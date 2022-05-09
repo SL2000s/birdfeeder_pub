@@ -1,0 +1,5 @@
+<Files "pw_hash.txt">
+    Order Deny,Allow
+    Allow from localhost
+    Deny from all
+</Files>
