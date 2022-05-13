@@ -67,14 +67,22 @@
         <div id="main">
           <div class="inner">
             <h1 div style="text-align: center; margin: 0px auto; display; block;">Visualization of data</h1>
-            <div id='pirDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
-            <div id='weightDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+            <div id='bothDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+
+            <br>
+            <b>Other visualizations of the data may be found here:</b>
+							<dl>
+									<dd>- <a href="birddetection_stats.php">Bird Detection Analyzer</a></dd>
+									<dd>- <a href="weight_stats.php">Bird Food Analyzer</a></dd>
+                  <dd>- <a href="raw_data.php">Raw Data</a></dd>
+							</dl>	
+
 
             <?php
               if ($file = fopen("data/pir_data.txt", "r")) {
 
                 echo '
-                  <script>
+                <script>
                     var n_hours = 48;
                     var now = new Date("' . date("Y-m-d H:i:s") . '");
                     var now_rounded = new Date(now);
@@ -110,13 +118,14 @@
                   }
 
                   echo '
-                      var data = [{
+                      var trace1 = {
                         type: "bar",
-                        opacity: 1,
                         y: y1,
-                        x: x1
-                      }];
-        
+                        x: x1,
+                        name: "Detections"
+                      };
+                      
+                      /*
                       var layout = {
                         bargap: 0.05, 
                         bargroupgap: 0.2, 
@@ -129,11 +138,10 @@
         
                       var config = {doubleClickDelay: 1000,
                                     scrollZoom: true};
-        
-                      Plotly.newPlot("pirDiv", data, layout, config);
+                      */
 
 
-                    </script>
+                    
                   ';
                   
                   fclose($file);
@@ -142,14 +150,13 @@
                 echo "ERROR: cannot find data file";
               }
             ?>      
-            <br>
-            <br>
+         
             
             <?php
               if ($file = fopen("data/weight_data.txt", "r")) {
                 
                 echo '
-                    <script>
+                    
                     var x = [];
                     var y = [];
                     var last_weight = -1;
@@ -166,44 +173,47 @@
                       echo '
                         last_date = "' . substr($line, 0, 19) .'";
                         x.push(new Date(last_date));
-                        last_weight = ' . substr($line, 20, strlen($line)-20) . ';
+                        last_weight = ' . intval(substr($line, 20, strlen($line)-20))/100 . ';
                         y.push(last_weight);
                       ';
                   }
 
                   echo '
-                        var trace1 = {
+                        var trace2 = {
                             x: x,
                             y: y,
-                            type: "scatter"
+                            type: "scatter",
+                            name: "Weight"
                         };
                         
-                        var data = [trace1];
+                        var data = [trace2, trace1];
+                        
                         
                         var layout = {
-                            title: "Weight since start", 
+                            title: "Weight (line) and detections (bars)", 
                             xaxis: {title: "Time",
                                     type: "date"}, 
-                            yaxis: {title: "Weight (g)"},
+                            yaxis: {title: "Value (hg or #detections)"},
                             showlegend: false
                         };
 
+                        
                         var config = {doubleClickDelay: 1000,
                                     scrollZoom: true};
-                        
-                        Plotly.newPlot("weightDiv", data, layout, config);
+                        Plotly.newPlot("bothDiv", data, layout, config);
 
-                        
-                    </script>
+                      </script>
+                    
                   ';
                   fclose($file);
               }
               else {
                 echo "ERROR: cannot find data file";
               }
-            ?>  
+            ?>
 
-            See the raw data <a href="raw_data.php">here</a>
+
+
           </div>       
         </div>
 
